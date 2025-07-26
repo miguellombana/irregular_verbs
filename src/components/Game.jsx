@@ -14,7 +14,19 @@ const Game = ({ mode, onFinish }) => {
   const [errorList, setErrorList] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [waitingNext, setWaitingNext] = useState(false);
+  const [startTime, setStartTime] = useState(Date.now());
+  const [currentQuestionTime, setCurrentQuestionTime] = useState(Date.now());
+  const [questionTimes, setQuestionTimes] = useState([]);
+  const [timer, setTimer] = useState(0);
   const verbList = useMemo(() => (mode === 'short' ? getRandomVerbs(15) : verbs), [mode]);
+
+  // Timer effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(Date.now() - currentQuestionTime);
+    }, 100);
+    return () => clearInterval(interval);
+  }, [currentQuestionTime]);
 
   useEffect(() => {
     setCurrent(0);
@@ -23,6 +35,10 @@ const Game = ({ mode, onFinish }) => {
     setFeedback(null);
     setErrorList([]);
     setWaitingNext(false);
+    setStartTime(Date.now());
+    setCurrentQuestionTime(Date.now());
+    setQuestionTimes([]);
+    setTimer(0);
   }, [mode]);
 
   const handleChange = (e) => {
@@ -33,9 +49,21 @@ const Game = ({ mode, onFinish }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (waitingNext) return;
+    
+    const responseTime = Date.now() - currentQuestionTime;
     const userForms = [inputs.infinitive, inputs.past, inputs.participle];
     const correct = validateAnswer(userForms, verbList[current].en);
+    
+    // Guardar tiempo de respuesta
+    const newQuestionTimes = [...questionTimes, {
+      verb: verbList[current].es,
+      time: responseTime,
+      correct: correct
+    }];
+    setQuestionTimes(newQuestionTimes);
+    
     setAnswers([...answers, correct]);
+    
     if (correct) {
       setFeedback('✅ Correcto');
       setTimeout(() => {
@@ -43,12 +71,25 @@ const Game = ({ mode, onFinish }) => {
         setInputs({infinitive: '', past: '', participle: ''});
         if (current + 1 < verbList.length) {
           setCurrent(current + 1);
+          setCurrentQuestionTime(Date.now());
+          setTimer(0);
         } else {
-          onFinish({
+          const totalTime = Date.now() - startTime;
+          const correctAnswers = answers.filter(Boolean).length + 1;
+          const finalStats = {
             total: verbList.length,
-            correct: answers.filter(Boolean).length + 1,
+            correct: correctAnswers,
             errors: errorList,
-          });
+            totalTime: totalTime,
+            questionTimes: newQuestionTimes,
+            averageTime: totalTime / verbList.length,
+            accuracy: (correctAnswers / verbList.length) * 100,
+            mode: mode
+          };
+          
+          // Guardar estadísticas en localStorage
+          saveStats(finalStats);
+          onFinish(finalStats);
         }
       }, 1200);
     } else {
@@ -64,17 +105,63 @@ const Game = ({ mode, onFinish }) => {
     setWaitingNext(false);
     if (current + 1 < verbList.length) {
       setCurrent(current + 1);
+      setCurrentQuestionTime(Date.now());
+      setTimer(0);
     } else {
-      onFinish({
+      const totalTime = Date.now() - startTime;
+      const correctAnswers = answers.filter(Boolean).length;
+      const finalStats = {
         total: verbList.length,
-        correct: answers.filter(Boolean).length,
+        correct: correctAnswers,
         errors: errorList,
-      });
+        totalTime: totalTime,
+        questionTimes: questionTimes,
+        averageTime: totalTime / verbList.length,
+        accuracy: (correctAnswers / verbList.length) * 100,
+        mode: mode
+      };
+      
+      // Guardar estadísticas en localStorage
+      saveStats(finalStats);
+      onFinish(finalStats);
     }
+  };
+
+  // Función para guardar estadísticas
+  const saveStats = (stats) => {
+    const existingStats = JSON.parse(localStorage.getItem('irregularVerbsStats') || '[]');
+    const newStats = {
+      ...stats,
+      date: new Date().toISOString(),
+      id: Date.now()
+    };
+    existingStats.push(newStats);
+    
+    // Mantener solo las últimas 50 partidas
+    if (existingStats.length > 50) {
+      existingStats.splice(0, existingStats.length - 50);
+    }
+    
+    localStorage.setItem('irregularVerbsStats', JSON.stringify(existingStats));
+  };
+
+  // Función para formatear tiempo
+  const formatTime = (ms) => {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    
+    if (minutes > 0) {
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+    return `${remainingSeconds}s`;
   };
 
   return (
     <div className="game-container">
+      <div className="timer-container">
+        <span className="timer">⏱️ {formatTime(timer)}</span>
+      </div>
       <h2>Verbo en español: <b>{verbList[current].es}</b></h2>
       <form onSubmit={handleSubmit} autoComplete="off">
         <input
