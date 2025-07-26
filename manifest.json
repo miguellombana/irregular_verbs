@@ -2,12 +2,12 @@
   "name": "Irregular Verbs - English Learning Game",
   "short_name": "Irregular Verbs",
   "description": "Master English irregular verbs with this interactive learning game",
-  "start_url": "/",
+  "start_url": "/irregular_verbs/",
   "display": "standalone",
   "background_color": "#FAE8BA",
   "theme_color": "#D4B896",
   "orientation": "portrait-primary",
-  "scope": "/",
+  "scope": "/irregular_verbs/",
   "icons": [
     {
       "src": "/icon-192.svg",
