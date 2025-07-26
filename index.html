@@ -28,7 +28,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/irregular_verbs/sw.js')
+          navigator.serviceWorker.register('/irregular_verbs/sw.js', { scope: '/irregular_verbs/' })
             .then((registration) => {
               console.log('SW registered: ', registration);
             })
