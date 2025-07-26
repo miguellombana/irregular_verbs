@@ -1,0 +1,53 @@
+{
+  "name": "Irregular Verbs - English Learning Game",
+  "short_name": "Irregular Verbs",
+  "description": "Master English irregular verbs with this interactive learning game",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAE8BA",
+  "theme_color": "#D4B896",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["education", "games"],
+  "lang": "en",
+  "shortcuts": [
+    {
+      "name": "Quick Game - 15 Words",
+      "short_name": "Quick Game",
+      "description": "Start a quick 15-word game",
+      "url": "/?mode=short",
+      "icons": [
+        {
+          "src": "/icon-192.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Full Game",
+      "short_name": "Full Game",
+      "description": "Start the complete verb list game",
+      "url": "/?mode=full",
+      "icons": [
+        {
+          "src": "/icon-192.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

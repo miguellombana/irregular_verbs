@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Irregular Verbs - English Learning Game</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/irregular_verbs/manifest.json" />
+    <meta name="theme-color" content="#D4B896" />
+    <meta name="background-color" content="#FAE8BA" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Irregular Verbs" />
+    <link rel="apple-touch-icon" href="/irregular_verbs/icon-192.svg" />
+    
+    <link rel="icon" href="/irregular_verbs/icon-192.svg" type="image/svg+xml" />
+    
+    
+    <script type="module" crossorigin src="/irregular_verbs/assets/index-b74c690c.js"></script>
+    <link rel="stylesheet" href="/irregular_verbs/assets/index-78ac0957.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+      
+      // PWA Install prompt
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        showInstallPromotion();
+      });
+      
+      function showInstallPromotion() {
+        if (!document.getElementById('install-banner')) {
+          const banner = document.createElement('div');
+          banner.id = 'install-banner';
+          banner.innerHTML = `
+            <div style="
+              position: fixed;
+              bottom: 20px;
+              left: 20px;
+              right: 20px;
+              background: linear-gradient(135deg, #D4B896, #C7A876);
+              color: #5D4E37;
+              padding: 12px 16px;
+              border-radius: 8px;
+              box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+              z-index: 1000;
+              text-align: center;
+              font-family: Arial, sans-serif;
+              border: 2px solid #8B4513;
+            ">
+              <div style="margin-bottom: 8px; font-weight: bold;">📱 Install Irregular Verbs</div>
+              <div style="font-size: 0.9rem; margin-bottom: 10px;">Add to your home screen for quick access!</div>
+              <button onclick="installApp()" style="
+                background: #5D4E37;
+                color: #FFF8F0;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                margin-right: 8px;
+                cursor: pointer;
+                font-weight: bold;
+              ">Install</button>
+              <button onclick="dismissInstall()" style="
+                background: transparent;
+                color: #5D4E37;
+                border: 1px solid #5D4E37;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+              ">Maybe Later</button>
+            </div>
+          `;
+          document.body.appendChild(banner);
+        }
+      }
+      
+      function installApp() {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            } else {
+              console.log('User dismissed the install prompt');
+            }
+            deferredPrompt = null;
+            dismissInstall();
+          });
+        }
+      }
+      
+      function dismissInstall() {
+        const banner = document.getElementById('install-banner');
+        if (banner) {
+          banner.remove();
+        }
+      }
+      
+      // Hide install banner when app is installed
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        dismissInstall();
+      });
+    </script>
+  </body>
+</html>
