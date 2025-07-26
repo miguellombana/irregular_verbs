@@ -1,10 +1,11 @@
 const CACHE_NAME = 'irregular-verbs-v1';
 const urlsToCache = [
-  '/',
-  '/manifest.json',
-  '/icon-192.svg',
-  '/icon-512.svg'
+  '/irregular_verbs/',
+  '/irregular_verbs/manifest.json',
+  '/irregular_verbs/icon-192.svg',
+  '/irregular_verbs/icon-512.svg'
 ];
+
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
