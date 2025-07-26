@@ -1,0 +1,9 @@
+.app-container h1 {
+  margin-bottom: 24px;
+  color: #5D4E37;
+  text-shadow: 2px 2px 4px rgba(139, 69, 19, 0.2);
+}
+
+.app-container {
+  background: linear-gradient(135deg, #FFF8F0 0%, #FAE8BA 100%);
+}
